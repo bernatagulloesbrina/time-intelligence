@@ -269,7 +269,7 @@ foreach(var cg in Model.CalculationGroups) {
             string itemFormatExpression = defFormatString;
             
             if(calcItems[j,2] != defFormatString) {
-                itemFormatExpression = calcItemProtection.Replace("<CODE>",calcItems[j,2]);
+                itemFormatExpression = calcItemFormatProtection.Replace("<CODE>",calcItems[j,2]);
             };
 
             string itemDescription = calcItems[j,3];
