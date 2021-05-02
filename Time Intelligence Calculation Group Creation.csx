@@ -29,6 +29,33 @@ string dateWithSalesColumnName = "DateWithSales";
 // ----- do not modify script below this line -----
 //
 
+
+string calcItemProtection = "<CODE>"; //default value if user has selected no measures
+
+
+if (Selected.Measures.Count != 0) {
+    
+    string affectedMeasures = "{";
+    
+    foreach(var m in Selected.Measures) {
+        if(affectedMeasures == "{") {
+        affectedMeasures = affectedMeasures + "\"" + m.Name + "\"";
+        }else{
+            affectedMeasures = affectedMeasures + ",\"" + m.Name + "\"" ;
+        };
+    };
+
+    affectedMeasures = affectedMeasures + "}";
+    
+    calcItemProtection = 
+        "IF(" + 
+        "   SELECTEDMEASURENAME() IN " + affectedMeasures + "," + 
+        "   <CODE> ," + 
+        "   SELECTEDMEASURE() " + 
+        ")";
+    
+};
+    
 string dateColumnWithTable = "'" + dateTableName + "'[" + dateTableDateColumnName + "]"; 
 string factDateColumnWithTable = "'" + factTableName + "'[" + factTableDateColumnName + "]";
 string dateWithSalesWithTable = "'" + dateTableName + "'[" + dateWithSalesColumnName + "]";
@@ -215,13 +242,17 @@ string[ , ] calcItems =
     
 int j = 0;
 
+
+
+
+
 //create calculation items for each calculation with formatstring and description
 foreach(var cg in Model.CalculationGroups) {
     if (cg.Name == calcGroupName) {
         for (j = 0; j < calcItems.GetLength(0); j++) {
             
             string itemName = calcItems[j,0];
-            string itemExpression = calcItems[j,1];
+            string itemExpression = calcItemProtection.Replace("<CODE>",calcItems[j,1]);
             string itemFormatExpression = calcItems[j,2];
             string itemDescription = calcItems[j,3];
             
