@@ -196,7 +196,7 @@ string YOYTDpct =
     
 
 string defFormatString = "SELECTEDMEASUREFORMATSTRING()";
-string pctFormatString = "#,##0%";
+string pctFormatString = "\"#,##0.#%\"";
 
 
 //the order in the array also determines the ordinal position of the item    
