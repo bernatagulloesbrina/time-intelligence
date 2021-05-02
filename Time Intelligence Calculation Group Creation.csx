@@ -11,15 +11,15 @@ string calcGroupName = "Time Intelligence";
 //add the name for the column you want to appear in the calculation group
 string columnName = "Time Calculation";
 
-
 //add the name and date column name for fact table 
-//over which you will create the measures to be used with the calculation group
 string factTableName = "Sales";
 string factTableDateColumnName = "Order Date";
 
 //add the name for date table of the model
 string dateTableName = "Date";
 string dateTableDateColumnName = "Date";
+
+//add the measure and calculated column names you want or leave them as they are
 string ShowValueForDatesMeasureName = "ShowValueForDates";
 string dateWithSalesColumnName = "DateWithSales";
 
@@ -91,14 +91,16 @@ ShowValueForDatesMeasure.FormatDax();
 
 
 string CY = 
+    "/*CY*/ " + 
     "SELECTEDMEASURE()";
 
 
 string PY = 
+    "/*PY*/ " +
     "IF (" + 
     "    [" + ShowValueForDatesMeasureName + "], " + 
     "    CALCULATE ( " + 
-    "        SELECTEDMEASURE(), " + 
+    "        "+ CY + ", " + 
     "        CALCULATETABLE ( " + 
     "            DATEADD ( " + dateColumnWithTable + " , -1, YEAR ), " + 
     "            " + dateWithSalesWithTable + " = TRUE " +  
@@ -108,75 +110,106 @@ string PY =
     
 
 string YOY = 
-    "VAR ValueCurrentPeriod = SELECTEDMEASURE() " + 
-    "VAR ValuePreviousPeriod = CALCULATE(SELECTEDMEASURE()," + calcGroupColumnWithTable + " = \"PY\" ) " +
+    "/*YOY*/ " + 
+    "VAR ValueCurrentPeriod = " + CY + " " + 
+    "VAR ValuePreviousPeriod = " + PY + " " +
     "VAR Result = " + 
     "IF ( " + 
     "    NOT ISBLANK ( ValueCurrentPeriod ) && NOT ISBLANK ( ValuePreviousPeriod ), " + 
     "     ValueCurrentPeriod - ValuePreviousPeriod" + 
     " ) " +  
     "RETURN " + 
-    "   Result";
+    "   Result ";
 
 string YOYpct = 
+    "/*YOY%*/ " +
+   "VAR ValueCurrentPeriod = " + CY + " " + 
+    "VAR ValuePreviousPeriod = " + PY + " " + 
+    "VAR CurrentMinusPreviousPeriod = " +
+    "IF ( " + 
+    "    NOT ISBLANK ( ValueCurrentPeriod ) && NOT ISBLANK ( ValuePreviousPeriod ), " + 
+    "     ValueCurrentPeriod - ValuePreviousPeriod" + 
+    " ) " +  
+    "VAR Result = " + 
     "DIVIDE ( "  + 
-    "    CALCULATE(SELECTEDMEASURE()," + calcGroupColumnWithTable + " = \"YOY\" )," + 
-    "    CALCULATE(SELECTEDMEASURE()," + calcGroupColumnWithTable + " = \"PY\" )" + 
-    ")";
+    "    CurrentMinusPreviousPeriod," + 
+    "    ValuePreviousPeriod" + 
+    ") " + 
+    "RETURN " + 
+    "  Result";
     
 string YTD = 
+    "/*YTD*/" + 
     "IF (" +
     "    [" + ShowValueForDatesMeasureName + "]," + 
     "    CALCULATE (" +
-    "        SELECTEDMEASURE()," + 
+    "        " + CY+ "," + 
     "        DATESYTD (" +  dateColumnWithTable + " )" + 
     "   )" + 
-    ")";
+    ") ";
     
     
 string PYTD = 
+    "/*PYTD*/" + 
     "IF ( " + 
     "    [" + ShowValueForDatesMeasureName + "], " + 
     "   CALCULATE ( " + 
-    "       CALCULATE(SELECTEDMEASURE()," + calcGroupColumnWithTable + " = \"YTD\" )," + 
+    "       " + YTD + "," + 
     "    CALCULATETABLE ( " + 
     "        DATEADD ( " + dateColumnWithTable + ", -1, YEAR ), " + 
     "       " + dateWithSalesWithTable + " = TRUE " +  
     "       )" + 
     "   )" + 
-    ")";
+    ") ";
     
 
     
 string YOYTD = 
-    "VAR ValueCurrentPeriod = CALCULATE(SELECTEDMEASURE()," + calcGroupColumnWithTable + " = \"YTD\" )  " + 
-    "VAR ValuePreviousPeriod = CALCULATE(SELECTEDMEASURE()," + calcGroupColumnWithTable + " = \"PYTD\" ) " +
+    "/*YOYTD*/" + 
+    "VAR ValueCurrentPeriod = " + YTD + 
+    "VAR ValuePreviousPeriod = " + PYTD +
     "VAR Result = " + 
     "IF ( " + 
     "    NOT ISBLANK ( ValueCurrentPeriod ) && NOT ISBLANK ( ValuePreviousPeriod ), " + 
     "     ValueCurrentPeriod - ValuePreviousPeriod" + 
     " ) " +  
     "RETURN " + 
-    "   Result";
+    "   Result ";
 
 
 string YOYTDpct = 
+    "/*YOYTD%*/" + 
+    "VAR ValueCurrentPeriod = " + YTD + " " + 
+    "VAR ValuePreviousPeriod = " + PYTD + " " + 
+    "VAR CurrentMinusPreviousPeriod = " +
+    "IF ( " + 
+    "    NOT ISBLANK ( ValueCurrentPeriod ) && NOT ISBLANK ( ValuePreviousPeriod ), " + 
+    "     ValueCurrentPeriod - ValuePreviousPeriod" + 
+    " ) " +  
+    "VAR Result = " + 
     "DIVIDE ( "  + 
-    "    CALCULATE(SELECTEDMEASURE()," + calcGroupColumnWithTable + " = \"YOYTD\" )," + 
-    "    CALCULATE(SELECTEDMEASURE()," + calcGroupColumnWithTable + " = \"PYTD\" )" + 
-    ")";
+    "    CurrentMinusPreviousPeriod," + 
+    "    ValuePreviousPeriod" + 
+    ") " + 
+    "RETURN " + 
+    "  Result";
     
 
+string defFormatString = "SELECTEDMEASUREFORMATSTRING()";
+string pctFormatString = "#,##0%";
+
+
+//the order in the array also determines the ordinal position of the item    
 string[ , ] calcItems = 
     {
-        {"CY",CY},
-        {"PY",PY},
-        {"YOY",YOY},
-        {"YOY%",YOYpct},
-        {"YTD",YTD},
-        {"PYTD",PYTD},
-        {"YOYTD",YOYTD},
-        {"YOYTD%",YOYTDpct}
+        {"CY",      CY,         defFormatString,    "Current year"},
+        {"PY",      PY,         defFormatString,    "Previous year"},
+        {"YOY",     YOY,        defFormatString,    "Year-over-year" },
+        {"YOY%",    YOYpct,     pctFormatString,    "Year-over-year%"},
+        {"YTD",     YTD,        defFormatString,    "Year-to-date"},
+        {"PYTD",    PYTD,       defFormatString,    "Previous year-to-date"},
+        {"YOYTD",   YOYTD,      defFormatString,    "Year-over-year-to-date"},
+        {"YOYTD%",  YOYTDpct,   pctFormatString,    "Year-over-year-to-date%"},
     };
 
     
@@ -189,12 +222,15 @@ foreach(var cg in Model.CalculationGroups) {
             
             string itemName = calcItems[j,0];
             string itemExpression = calcItems[j,1];
+            string itemFormatExpression = calcItems[j,2];
+            string itemDescription = calcItems[j,3];
             
             if (!cg.CalculationItems.Contains(itemName)) {
                 var nCalcItem = cg.AddCalculationItem(itemName, itemExpression);
-                nCalcItem.FormatStringExpression = "SELECTEDMEASUREFORMATSTRING()";
+                nCalcItem.FormatStringExpression = itemFormatExpression;
                 nCalcItem.FormatDax();
                 nCalcItem.Ordinal = j; 
+                nCalcItem.Description = itemDescription;
                 
             };
         };
