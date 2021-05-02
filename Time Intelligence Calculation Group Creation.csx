@@ -34,7 +34,7 @@ string dateWithSalesColumnName = "DateWithSales";
 
 
 string calcItemProtection = "<CODE>"; //default value if user has selected no measures
-
+string calcItemFormatProtection = "<CODE>"; //default value if user has selected no measures
 
 if (Selected.Measures.Count != 0) {
     
@@ -56,6 +56,16 @@ if (Selected.Measures.Count != 0) {
         "   <CODE> ," + 
         "   SELECTEDMEASURE() " + 
         ")";
+        
+        
+    calcItemFormatProtection = 
+        "IF(" + 
+        "   SELECTEDMEASURENAME() IN " + affectedMeasures + "," + 
+        "   <CODE> ," + 
+        "   SELECTEDMEASUREFORMATSTRING() " + 
+        ")";
+    
+   
     
 };
     
@@ -256,7 +266,12 @@ foreach(var cg in Model.CalculationGroups) {
             
             string itemName = calcItems[j,0];
             string itemExpression = calcItemProtection.Replace("<CODE>",calcItems[j,1]);
-            string itemFormatExpression = calcItems[j,2];
+            string itemFormatExpression = defFormatString;
+            
+            if(calcItems[j,2] != defFormatString) {
+                itemFormatExpression = calcItemProtection.Replace("<CODE>",calcItems[j,2]);
+            };
+
             string itemDescription = calcItems[j,3];
             
             if (!cg.CalculationItems.Contains(itemName)) {
