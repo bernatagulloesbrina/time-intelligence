@@ -215,7 +215,7 @@ string[ , ] calcItems =
     
 int j = 0;
 
-//create calculation items based on selected measures, including check to make sure calculation item doesnt exist
+//create calculation items for each calculation with formatstring and description
 foreach(var cg in Model.CalculationGroups) {
     if (cg.Name == calcGroupName) {
         for (j = 0; j < calcItems.GetLength(0); j++) {
