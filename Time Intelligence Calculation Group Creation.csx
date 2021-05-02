@@ -3,7 +3,10 @@
 
 //shout out to Johnny Winter for the base script and SQLBI for daxpatterns.com
 
-//change the next 6 string variables for different naming conventions
+//change the next 6 string variables to fit your model
+//select the measures that you want to be affected by the calculation group
+//otherwise all measures under its filter context will be afected
+
 
 //add the name of your calculation group here
 string calcGroupName = "Time Intelligence";
