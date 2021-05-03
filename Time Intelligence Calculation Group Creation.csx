@@ -3,10 +3,16 @@
 
 //shout out to Johnny Winter for the base script and SQLBI for daxpatterns.com
 
-//change the next 6 string variables to fit your model
 //select the measures that you want to be affected by the calculation group
-//otherwise all measures under its filter context will be afected
+//before running the script. 
+//measure names can also be included in the following array (no need to select them) 
+string[] preSelectedMeasures = {}; //include measure names in double quotes, like: {"Profit","Total Cost"};
 
+//if no measures are selected and none specified above, 
+//all measures under the calculation group filter context will be afected
+
+
+//change the next 6 string variables to fit your model
 
 //add the name of your calculation group here
 string calcGroupName = "Time Intelligence";
@@ -36,9 +42,22 @@ string dateWithSalesColumnName = "DateWithSales";
 string calcItemProtection = "<CODE>"; //default value if user has selected no measures
 string calcItemFormatProtection = "<CODE>"; //default value if user has selected no measures
 
-if (Selected.Measures.Count != 0) {
+string affectedMeasures = "{";
+
+int i = 0; 
+
+for (i=0;i<preSelectedMeasures.GetLength(0);i++){
+  
+    if(affectedMeasures == "{") {
+    affectedMeasures = affectedMeasures + "\"" + preSelectedMeasures[i] + "\"";
+    }else{
+        affectedMeasures = affectedMeasures + ",\"" + preSelectedMeasures[i] + "\"" ;
+    }; 
     
-    string affectedMeasures = "{";
+};
+
+
+if (Selected.Measures.Count != 0) {
     
     foreach(var m in Selected.Measures) {
         if(affectedMeasures == "{") {
@@ -48,6 +67,13 @@ if (Selected.Measures.Count != 0) {
         };
     };
 
+    
+    
+};
+    
+//if there where selected or preselected measures, prepare protection code for expresion and formatstring
+if(affectedMeasures != "{") { 
+    
     affectedMeasures = affectedMeasures + "}";
     
     calcItemProtection = 
@@ -64,9 +90,6 @@ if (Selected.Measures.Count != 0) {
         "   <CODE> ," + 
         "   SELECTEDMEASUREFORMATSTRING() " + 
         ")";
-    
-   
-    
 };
     
 string dateColumnWithTable = "'" + dateTableName + "'[" + dateTableDateColumnName + "]"; 
