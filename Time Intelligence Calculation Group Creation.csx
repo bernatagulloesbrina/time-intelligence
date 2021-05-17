@@ -1,3 +1,5 @@
+// '2021-05-01 / B.Agullo / 
+// '2021-05-17 / B.Agullo / added affected measure table
 // by Bernat Agulló
 // www.esbrina-ba.com
 
@@ -31,6 +33,10 @@ string dateTableDateColumnName = "Date";
 //add the measure and calculated column names you want or leave them as they are
 string ShowValueForDatesMeasureName = "ShowValueForDates";
 string dateWithSalesColumnName = "DateWithSales";
+
+string affectedMeasuresTableName = "Time Intelligence Affected Measures"; 
+string affectedMeasuresColumnName = "Measure"; 
+
 
 
 
@@ -70,15 +76,34 @@ if (Selected.Measures.Count != 0) {
     
     
 };
-    
+
+
+
+
 //if there where selected or preselected measures, prepare protection code for expresion and formatstring
 if(affectedMeasures != "{") { 
     
     affectedMeasures = affectedMeasures + "}";
     
+    string affectedMeasureTableExpression = 
+        "SELECTCOLUMNS(" + affectedMeasures + ",\"" + affectedMeasuresColumnName + "\",[Value])";
+
+    var affectedMeasureTable = 
+        Model.AddCalculatedTable(affectedMeasuresTableName,affectedMeasureTableExpression);
+    
+    affectedMeasureTable.FormatDax(); 
+    affectedMeasureTable.Description = 
+        "Measures affected by " + calcGroupName + " calculation group." ;
+    
+    affectedMeasureTable.IsHidden = true;     
+    
+    
+    
+    string affectedMeasuresValues = "VALUES('" + affectedMeasuresTableName + "'[" + affectedMeasuresColumnName + "])";
+    
     calcItemProtection = 
         "IF(" + 
-        "   SELECTEDMEASURENAME() IN " + affectedMeasures + "," + 
+        "   SELECTEDMEASURENAME() IN " + affectedMeasuresValues + "," + 
         "   <CODE> ," + 
         "   SELECTEDMEASURE() " + 
         ")";
@@ -86,7 +111,7 @@ if(affectedMeasures != "{") {
         
     calcItemFormatProtection = 
         "IF(" + 
-        "   SELECTEDMEASURENAME() IN " + affectedMeasures + "," + 
+        "   SELECTEDMEASURENAME() IN " + affectedMeasuresValues + "," + 
         "   <CODE> ," + 
         "   SELECTEDMEASUREFORMATSTRING() " + 
         ")";
