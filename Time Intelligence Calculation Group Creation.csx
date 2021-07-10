@@ -1,6 +1,7 @@
 // '2021-05-01 / B.Agullo / 
 // '2021-05-17 / B.Agullo / added affected measure table
 // '2021-06-19 / B.Agullo / data label measures
+// '2021-07-10 / B.Agullo / added flag expression to avoid breaking already special format strings
 // by Bernat Agulló
 // www.esbrina-ba.com
 
@@ -42,7 +43,7 @@ string affectedMeasuresColumnName = "Measure";
 string labelAsValueMeasureName = "Label as Value Measure"; 
 string labelAsFormatStringMeasureName = "Label as format string"; 
 
-
+string flagExpression = "UNICHAR( 8204 )"; 
 
 //
 // ----- do not modify script below this line -----
@@ -367,7 +368,14 @@ string YOYTDpctLabel =
     
 
 string defFormatString = "SELECTEDMEASUREFORMATSTRING()";
-string pctFormatString = "\"#,##0.#%\"";
+
+//if the flag expression is already present in the format string, do not change it, otherwise apply % format. 
+string pctFormatString = 
+"IF(" + 
+"\n	FIND( "+ flagExpression + ", SELECTEDMEASUREFORMATSTRING(), 1, - 1 ) <> -1," + 
+"\n	SELECTEDMEASUREFORMATSTRING()," + 
+"\n	\"#,##0.# %\"" + 
+"\n)";
 
 
 //the order in the array also determines the ordinal position of the item    
