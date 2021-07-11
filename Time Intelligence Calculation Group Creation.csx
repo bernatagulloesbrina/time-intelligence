@@ -30,7 +30,7 @@ string factTableDateColumnName = "Order Date";
 //add the name for date table of the model
 string dateTableName = "Date";
 string dateTableDateColumnName = "Date";
-string dateTableYearColumnName = "CalendarYear"; 
+string dateTableYearColumnName = "Calendar Year"; 
 
 //add the measure and calculated column names you want or leave them as they are
 string ShowValueForDatesMeasureName = "ShowValueForDates";
