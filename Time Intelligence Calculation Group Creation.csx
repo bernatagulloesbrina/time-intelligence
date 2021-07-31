@@ -30,7 +30,7 @@ string factTableDateColumnName = "Order Date";
 //add the name for date table of the model
 string dateTableName = "Date";
 string dateTableDateColumnName = "Date";
-string dateTableYearColumnName = "Calendar Year"; 
+string dateTableYearColumnName = "Year"; 
 
 //add the measure and calculated column names you want or leave them as they are
 string ShowValueForDatesMeasureName = "ShowValueForDates";
@@ -149,7 +149,7 @@ if (calcGroup.SourceType.ToString() != "CalculationGroup") {
 };
 
 //adds the two measures that will be used for label as value, label as format string 
-var labelAsValueMeasure = calcGroup.AddMeasure(labelAsValueMeasureName,"0");
+var labelAsValueMeasure = calcGroup.AddMeasure(labelAsValueMeasureName,"");
 labelAsValueMeasure.Description = "Use this measure to show the year evaluated in tables"; 
 
 var labelAsFormatStringMeasure = calcGroup.AddMeasure(labelAsFormatStringMeasureName,"0");
