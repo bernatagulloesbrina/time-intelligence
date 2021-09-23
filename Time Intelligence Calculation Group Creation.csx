@@ -2,6 +2,7 @@
 // '2021-05-17 / B.Agullo / added affected measure table
 // '2021-06-19 / B.Agullo / data label measures
 // '2021-07-10 / B.Agullo / added flag expression to avoid breaking already special format strings
+// '2021-09-23 / B.Agullo / added code to prompt for parameters (code credit to Daniel Otykier) 
 // by Bernat Agulló
 // www.esbrina-ba.com
 
@@ -12,10 +13,8 @@
 //measure names can also be included in the following array (no need to select them) 
 string[] preSelectedMeasures = {}; //include measure names in double quotes, like: {"Profit","Total Cost"};
 
-//AT LEAST ONE MEASURE HAS TO BE AFFECTED, 
+//AT LEAST ONE MEASURE HAS TO BE AFFECTED!, 
 //either by selecting it or typing its name in the preSelectedMeasures Variable
-
-//change the next string variables to fit your model
 
 //add the name of your calculation group here
 string calcGroupName = "Time Intelligence";
@@ -23,35 +22,16 @@ string calcGroupName = "Time Intelligence";
 //add the name for the column you want to appear in the calculation group
 string columnName = "Time Calculation";
 
-//add the name and date column name for fact table 
-string factTableName = "Sales";
-string factTableDateColumnName = "Order Date";
-
-//add the name for date table of the model
-string dateTableName = "Date";
-string dateTableDateColumnName = "Date";
-string dateTableYearColumnName = "Year"; 
-
-//add the measure and calculated column names you want or leave them as they are
-string ShowValueForDatesMeasureName = "ShowValueForDates";
-string dateWithSalesColumnName = "DateWithSales";
-
 string affectedMeasuresTableName = "Time Intelligence Affected Measures"; 
 string affectedMeasuresColumnName = "Measure"; 
 
-
 string labelAsValueMeasureName = "Label as Value Measure"; 
 string labelAsFormatStringMeasureName = "Label as format string"; 
-
-string flagExpression = "UNICHAR( 8204 )"; 
 
 //
 // ----- do not modify script below this line -----
 //
 
-
-string calcItemProtection = "<CODE>"; //default value if user has selected no measures
-string calcItemFormatProtection = "<CODE>"; //default value if user has selected no measures
 
 string affectedMeasures = "{";
 
@@ -84,6 +64,49 @@ if(affectedMeasures == "{") {
     Error("No measures affected by calc group"); 
     return; 
 };
+
+
+
+
+
+ // '2021-09-24 / B.Agullo / model object selection prompts! 
+var factTable = SelectTable(label: "Select your fact table");
+if(factTable == null) return;
+var factTableDateColumn = SelectColumn(factTable.Columns, label: "Select the main date column");
+if(factTableDateColumn == null) return;
+
+var dateTable = SelectTable(label: "Select your date table");
+if(dateTable == null) return;
+var dateTableDateColumn = SelectColumn(dateTable.Columns, label: "Select the date column");
+if(dateTableDateColumn == null) return;
+
+var dateTableYearColumn = SelectColumn(dateTable.Columns, label: "Select the year column");
+if(dateTableYearColumn == null) return;
+
+
+//these names are for internal use only, so no need to be super-fancy, better stick to datpatterns.com model
+string ShowValueForDatesMeasureName = "ShowValueForDates";
+string dateWithSalesColumnName = "DateWith" + factTable.Name;
+
+
+
+
+// '2021-09-24 / B.Agullo / I put the names back to variables so I don't have to tough the script
+string factTableName = factTable.Name;
+string factTableDateColumnName = factTableDateColumn.Name;
+string dateTableName = dateTable.Name;
+string dateTableDateColumnName = dateTableDateColumn.Name;
+string dateTableYearColumnName = dateTableYearColumn.Name; 
+
+// '2021-09-24 / B.Agullo / this is for internal use only so better leave it as is 
+string flagExpression = "UNICHAR( 8204 )"; 
+
+
+
+string calcItemProtection = "<CODE>"; //default value if user has selected no measures
+string calcItemFormatProtection = "<CODE>"; //default value if user has selected no measures
+
+
 
 //if there where selected or preselected measures, prepare protection code for expresion and formatstring
 if(affectedMeasures != "{") { 
@@ -163,7 +186,7 @@ if (calcGroup.Columns.Contains("Name")) {
 calcGroup.Columns[columnName].Description = "Select value(s) from this column to apply time intelligence calculations.";
 
 //set variable for the date table 
-Table dateTable = Model.Tables[dateTableName];
+//Table dateTable = Model.Tables[dateTableName];
 
 
 string DateWithSalesCalculatedColumnExpression = 
