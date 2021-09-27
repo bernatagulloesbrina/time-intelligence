@@ -1,8 +1,12 @@
+#r "Microsoft.VisualBasic"
+using Microsoft.VisualBasic;
+
 // '2021-05-01 / B.Agullo / 
 // '2021-05-17 / B.Agullo / added affected measure table
 // '2021-06-19 / B.Agullo / data label measures
 // '2021-07-10 / B.Agullo / added flag expression to avoid breaking already special format strings
 // '2021-09-23 / B.Agullo / added code to prompt for parameters (code credit to Daniel Otykier) 
+// '2021-09-27 / B.Agullo / added code for general name 
 // by Bernat Agulló
 // www.esbrina-ba.com
 
@@ -16,17 +20,7 @@ string[] preSelectedMeasures = {}; //include measure names in double quotes, lik
 //AT LEAST ONE MEASURE HAS TO BE AFFECTED!, 
 //either by selecting it or typing its name in the preSelectedMeasures Variable
 
-//add the name of your calculation group here
-string calcGroupName = "Time Intelligence";
 
-//add the name for the column you want to appear in the calculation group
-string columnName = "Time Calculation";
-
-string affectedMeasuresTableName = "Time Intelligence Affected Measures"; 
-string affectedMeasuresColumnName = "Measure"; 
-
-string labelAsValueMeasureName = "Label as Value Measure"; 
-string labelAsFormatStringMeasureName = "Label as format string"; 
 
 //
 // ----- do not modify script below this line -----
@@ -67,6 +61,26 @@ if(affectedMeasures == "{") {
 
 
 
+string calcGroupName = Interaction.InputBox("Provide a name for your Calc Group", "Calc Group Name", "Time Intelligence", 740, 400);
+if(calcGroupName == "") return;
+//string calcGroupName = "Time Intelligence";
+
+//add the name for the column you want to appear in the calculation group
+string columnName = Interaction.InputBox("Provide a name for your Calc Group Column", "Calc Group Column Name", calcGroupName, 740, 400);
+if(columnName == "") return;
+//string columnName = "Time Calculation";
+
+string affectedMeasuresTableName = Interaction.InputBox("Provide a name for affected measures table", "Affected Measures Table Name", calcGroupName  + " Affected Measures", 740, 400);
+if(affectedMeasuresTableName == "") return;
+//string affectedMeasuresTableName = "Time Intelligence Affected Measures"; 
+
+
+string affectedMeasuresColumnName = Interaction.InputBox("Provide a name for affected measures table", "Affected Measures Table Column Name", "Measure", 740, 400);
+if(affectedMeasuresColumnName == "") return;
+//string affectedMeasuresColumnName = "Measure"; 
+
+string labelAsValueMeasureName = "Label as Value Measure"; 
+string labelAsFormatStringMeasureName = "Label as format string"; 
 
 
  // '2021-09-24 / B.Agullo / model object selection prompts! 
@@ -87,9 +101,6 @@ if(dateTableYearColumn == null) return;
 //these names are for internal use only, so no need to be super-fancy, better stick to datpatterns.com model
 string ShowValueForDatesMeasureName = "ShowValueForDates";
 string dateWithSalesColumnName = "DateWith" + factTable.Name;
-
-
-
 
 // '2021-09-24 / B.Agullo / I put the names back to variables so I don't have to tough the script
 string factTableName = factTable.Name;
