@@ -134,8 +134,15 @@ if(affectedMeasures != "{") {
     affectedMeasureTable.Description = 
         "Measures affected by " + calcGroupName + " calculation group." ;
     
+    affectedMeasureTable.SetAnnotation("@AgulloBernat","Time Intel Affected Measures Table"); 
+   
+    // this causes error
+    // affectedMeasureTable.Columns[affectedMeasuresColumnName].SetAnnotation("@AgulloBernat","Time Intel Affected Measures Table Column");
+
     affectedMeasureTable.IsHidden = true;     
     
+
+
     string affectedMeasuresValues = "VALUES('" + affectedMeasuresTableName + "'[" + affectedMeasuresColumnName + "])";
     
     calcItemProtection = 
@@ -171,6 +178,7 @@ string calcGroupColumnWithTable = "'" + calcGroupName + "'[" + columnName + "]";
 if (!Model.Tables.Contains(calcGroupName)) {
   var cg = Model.AddCalculationGroup(calcGroupName);
   cg.Description = "Calculation group for time intelligence. Availability of data is taken from " + factTableName + ".";
+  cg.SetAnnotation("@AgulloBernat","Time Intel Calc Group"); 
 };
 
 //set variable for the calc group
@@ -192,9 +200,12 @@ labelAsFormatStringMeasure.Description = "Use this measure to show the year eval
 //by default the calc group has a column called Name. If this column is still called Name change this in line with specfied variable
 if (calcGroup.Columns.Contains("Name")) {
   calcGroup.Columns["Name"].Name = columnName;
+
 };
 
 calcGroup.Columns[columnName].Description = "Select value(s) from this column to apply time intelligence calculations.";
+calcGroup.Columns[columnName].SetAnnotation("@AgulloBernat","Time Intel Calc Group Column"); 
+
 
 //set variable for the date table 
 //Table dateTable = Model.Tables[dateTableName];
@@ -456,8 +467,12 @@ foreach(var cg in Model.CalculationGroups) {
                 nCalcItem.Description = itemDescription;
                 
             };
+
+
+
+
         };
 
-
+        
     };
 };
