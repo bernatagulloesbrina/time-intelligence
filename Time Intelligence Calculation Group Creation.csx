@@ -90,9 +90,20 @@ var factTableDateColumn = SelectColumn(factTable.Columns, label: "Select the mai
 if(factTableDateColumn == null) return;
 
 var dateTable = SelectTable(label: "Select your date table");
-if(dateTable == null) return;
+if(dateTable == null) {
+    Error("You just aborted the script"); 
+    return;
+} else {
+    dateTable.SetAnnotation("@AgulloBernat","Time Intel Date Table");
+}; 
+
 var dateTableDateColumn = SelectColumn(dateTable.Columns, label: "Select the date column");
-if(dateTableDateColumn == null) return;
+if(dateTableDateColumn == null) {
+    Error("You just aborted the script"); 
+    return;
+} else { 
+    dateTableDateColumn.SetAnnotation("@AgulloBernat","Time Intel Date Table Date Column"); 
+}; 
 
 var dateTableYearColumn = SelectColumn(dateTable.Columns, label: "Select the year column");
 if(dateTableYearColumn == null) return;
@@ -111,8 +122,6 @@ string dateTableYearColumnName = dateTableYearColumn.Name;
 
 // '2021-09-24 / B.Agullo / this is for internal use only so better leave it as is 
 string flagExpression = "UNICHAR( 8204 )"; 
-
-
 
 string calcItemProtection = "<CODE>"; //default value if user has selected no measures
 string calcItemFormatProtection = "<CODE>"; //default value if user has selected no measures
