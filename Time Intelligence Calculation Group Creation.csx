@@ -419,7 +419,65 @@ string YOYTDpctLabel =
     " ) " +  
     "RETURN " + 
     "  Result";
+
+
+string MAT = 
+ "        /*TAM*/" + 
+ "        IF (" + 
+    "    [" + ShowValueForDatesMeasureName + "], " + 
+ "            CALCULATE (" + 
+ "                SELECTEDMEASURE()," + 
+ "                DATESINPERIOD (" + 
+ "                    " +  dateColumnWithTable + " ," + 
+ "                    MAX ( " +  dateColumnWithTable + "  )," + 
+ "                    -1," + 
+ "                    YEAR" + 
+ "                )" + 
+ "                " + 
+ "            )" + 
+ "        )";  
+
+
+string MATlabel = "\"MAT\"";
+
+string MATminus1 = 
+ "        /*TAM*/" + 
+ "        IF (" + 
+ "            [" + ShowValueForDatesMeasureName + "], " + 
+ "            CALCULATE (" + 
+ "                SELECTEDMEASURE()," + 
+ "                DATESINPERIOD (" + 
+ "                    " +  dateColumnWithTable + "," + 
+ "                    LASTDATE( DATEADD( " +  dateColumnWithTable + ", - 1, YEAR ) )," + 
+ "                    -1," + 
+ "                    YEAR" + 
+ "                )" + 
+ "            )" + 
+ "        )";
     
+string MATminus1label = "\"MAT-1\"";
+
+string MATvsMATminus1 = 
+ "        /*MAT vs MAT-1*/\r\n" + 
+ "        VAR MAT = " + MAT + "\r\n" +
+ "        VAR MAT_1 =" + MATminus1 + "\r\n" +
+ "        RETURN \r\n" + 
+ "            IF( ISBLANK( MAT ) || ISBLANK( MAT_1 ), BLANK(), MAT - MAT_1 )";
+
+string MATvsMATminus1label = "\"MAT vs MAT-1\"";
+
+string MATvsMATminus1pct = 
+ "        /*MAT vs MAT-1(%)*/" + 
+ "        VAR MAT = " + MAT+ "\r\n" +
+ "        VAR MAT_1 =" + MATminus1 + "\r\n" +
+ "        RETURN" + 
+ "            IF(" + 
+ "                ISBLANK( MAT ) || ISBLANK( MAT_1 )," + 
+ "                BLANK()," + 
+ "                DIVIDE( MAT - MAT_1, MAT_1 )" + 
+ "            )"; 
+
+string MATvsMATminus1pctlabel = "\"MAT vs MAT-1 (%)\"";
 
 string defFormatString = "SELECTEDMEASUREFORMATSTRING()";
 
@@ -443,6 +501,10 @@ string[ , ] calcItems =
         {"PYTD",    PYTD,       defFormatString,    "Previous year-to-date",    PYTDlabel},
         {"YOYTD",   YOYTD,      defFormatString,    "Year-over-year-to-date",   YOYTDlabel},
         {"YOYTD%",  YOYTDpct,   pctFormatString,    "Year-over-year-to-date%",  YOYTDpctLabel},
+        {"MAT",     MAT,        defFormatString,    "Moving Anual Total",       MATlabel},
+        {"MAT-1",   MATminus1,  defFormatString,    "Moving Anual Total -1 year", MATminus1label},
+        {"MAT vs MAT-1", MATvsMATminus1, defFormatString, "Moving Anual Total vs Moving Anual Total -1 year", MATvsMATminus1label},
+        {"MAT vs MAT-1(%)", MATvsMATminus1pct, pctFormatString, "Moving Anual Total vs Moving Anual Total -1 year (%)", MATvsMATminus1pctlabel},
     };
 
     
