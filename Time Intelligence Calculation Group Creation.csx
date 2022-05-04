@@ -251,6 +251,63 @@ string CY =
 string CYlabel = 
     "SELECTEDVALUE(" + yearColumnWithTable + ")";
 
+string PM = 
+    "/*PM*/ " +
+    "IF (" + 
+    "    [" + ShowValueForDatesMeasureName + "], " + 
+    "    CALCULATE ( " + 
+    "        "+ CY + ", " + 
+    "        CALCULATETABLE ( " + 
+    "            DATEADD ( " + dateColumnWithTable + " , -1, MONTH ), " + 
+    "            " + dateWithSalesWithTable + " = TRUE " +  
+    "        ) " + 
+    "    ) " + 
+    ") ";
+    
+
+string PMlabel = 
+    "/*PM*/ " +
+    "IF (" + 
+    "    [" + ShowValueForDatesMeasureName + "], " + 
+    "    CALCULATE ( " + 
+    "        "+ CYlabel + ", " + 
+    "        CALCULATETABLE ( " + 
+    "            DATEADD ( " + dateColumnWithTable + " , -1, MONTH ), " + 
+    "            " + dateWithSalesWithTable + " = TRUE " +  
+    "        ) " + 
+    "    ) " + 
+    ") ";       
+    
+    
+string MOMpct = 
+    "/*MOM%*/ " +
+   "VAR ValueCurrentPeriod = " + CY + " " + 
+   "VAR ValuePreviousPeriod = " + PM + " " + 
+    "VAR CurrentMinusPreviousPeriod = " +
+    "IF ( " + 
+    "    NOT ISBLANK ( ValueCurrentPeriod ) && NOT ISBLANK ( ValuePreviousPeriod ), " + 
+    "     ValueCurrentPeriod - ValuePreviousPeriod" + 
+    " ) " +  
+    "VAR Result = " + 
+    "DIVIDE ( "  + 
+    "    CurrentMinusPreviousPeriod," + 
+    "    ValuePreviousPeriod" + 
+    ") " + 
+    "RETURN " + 
+    "  Result";
+
+string MOMpctLabel = 
+    "/*MOM%*/ " +
+   "VAR ValueCurrentPeriod = " + CYlabel + " " + 
+   "VAR ValuePreviousPeriod = " + PMlabel + " " + 
+    "VAR Result = " +
+    "IF ( " + 
+    "    NOT ISBLANK ( ValueCurrentPeriod ) && NOT ISBLANK ( ValuePreviousPeriod ), " + 
+    "     ValueCurrentPeriod & \" vs \" & ValuePreviousPeriod & \" (%)\"" + 
+    " ) " +  
+    "RETURN " + 
+    "  Result";    
+    
 
 string PY = 
     "/*PY*/ " +
@@ -484,9 +541,9 @@ string defFormatString = "SELECTEDMEASUREFORMATSTRING()";
 //if the flag expression is already present in the format string, do not change it, otherwise apply % format. 
 string pctFormatString = 
 "IF(" + 
-"\n	FIND( "+ flagExpression + ", SELECTEDMEASUREFORMATSTRING(), 1, - 1 ) <> -1," + 
-"\n	SELECTEDMEASUREFORMATSTRING()," + 
-"\n	\"#,##0.# %\"" + 
+"\n FIND( "+ flagExpression + ", SELECTEDMEASUREFORMATSTRING(), 1, - 1 ) <> -1," + 
+"\n SELECTEDMEASUREFORMATSTRING()," + 
+"\n \"#,##0.# %\"" + 
 "\n)";
 
 
@@ -495,6 +552,8 @@ string[ , ] calcItems =
     {
         {"CY",      CY,         defFormatString,    "Current year",             CYlabel},
         {"PY",      PY,         defFormatString,    "Previous year",            PYlabel},
+        {"PM",      PM,         defFormatString,    "Previous Month",           PMlabel},
+        {"MOM%",    MOMpct,     pctFormatString,    "Month-over-Month",         MOMpctLabel},
         {"YOY",     YOY,        defFormatString,    "Year-over-year",           YOYlabel},
         {"YOY%",    YOYpct,     pctFormatString,    "Year-over-year%",          YOYpctLabel},
         {"YTD",     YTD,        defFormatString,    "Year-to-date",             YTDlabel},
